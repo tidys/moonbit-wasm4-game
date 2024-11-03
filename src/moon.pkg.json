@@ -1,16 +1,20 @@
 {
-  "is-main": true,
-  "import": [
-    "moonbitlang/wasm4"
-  ],
-  "link": { 
-    "wasm":{
-        "exports": ["start","update"],
-        "import-memory":{
-            "module": "env",
-            "name": "memory"
-        },
-        "heap-start-address": 6560
+  "import": ["moonbitlang/wasm4"],
+  "link": {
+    "wasm": {
+      "exports": ["start", "update"],
+      "import-memory": {
+        "module": "env",
+        "name": "memory"
+      },
+      "heap-start-address": 6560
+    },
+    "wasm-gc": {
+      "exports": ["start", "update"],
+      "import-memory": {
+        "module": "env",
+        "name": "memory"
+      }
     }
   }
 }
