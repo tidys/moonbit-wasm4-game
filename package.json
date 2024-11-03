@@ -1,0 +1,17 @@
+{
+    "name": "moonbit",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "npx wasm4 ",
+        "clean": "moon clean",
+        "build": "moon build --target wasm",
+        "run": "npx wasm4 run ./target/wasm/release/build/game.wasm"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "wasm4": "^2.7.0"
+    }
+}
