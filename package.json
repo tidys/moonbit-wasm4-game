@@ -6,8 +6,7 @@
   "scripts": {
     "test": "npx wasm4 ",
     "clean": "moon clean",
-    "dd": "moon run main",
-    "build": "moon build --target wasm",
+    "build-watch": "moon build --target wasm --watch",
     "run": "npx wasm4 run ./target/wasm/release/build/game.wasm"
   },
   "author": "",
