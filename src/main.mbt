@@ -4,11 +4,18 @@ pub fn start() -> Int {
   return 0
 }
 
-let score = 0
+let stage_move : Int = 0
+
+let stage_merge : Int = 1
+
+let stage_idle : Int = 2
+
+let gameData : GameData = { stage: stage_idle, score: 0 }
 
 fn drawUI() -> Int {
   @wasm4.set_draw_colors(index=1, 4)
-  @wasm4.text("Score:" + score.to_string(), 0, 0)
+  gameData.score = gameData.score
+  @wasm4.text("Score:" + gameData.score.to_string(), 2, 2)
   return 0
 }
 
@@ -34,6 +41,35 @@ fn drawCell(cell : Cell) -> Int {
 
 pub fn update() -> Int {
   let mut ret = 0
+  if gameData.stage == stage_idle {
+    ret = debug("idle")
+    ret = watchInput()
+  } else if gameData.stage == stage_merge {
+    ret = debug("merge")
+    ret = moveEnd()
+    gameData.stage = stage_idle
+  } else if gameData.stage == stage_move {
+    ret = debug("move")
+    if allCellIsMoving() {
+      ret = debug("moving")
+      ret = cellStep()
+    } else {
+      gameData.stage = stage_merge
+    }
+  }
+  ret = renderCell()
+  ret = drawUI()
+  return ret
+}
+
+fn debug(text : String) -> Int {
+  @wasm4.set_draw_colors(index=1, 3)
+  @wasm4.text(text, 80, 2)
+  return 0
+}
+
+fn watchInput() -> Int {
+  let mut ret : Int = 0
   if @wasm4.get_gamepad(index=1).button_right {
 
   }
@@ -42,15 +78,20 @@ pub fn update() -> Int {
   }
   if @wasm4.get_gamepad(index=1).button_down {
     ret = cellDown()
+    gameData.stage = stage_move
   }
   if @wasm4.get_gamepad(index=1).button_up {
 
   }
+  return ret
+}
+
+fn renderCell() -> Int {
+  let mut ret : Int = 0
   for cellLine in cellArray {
     for cell in cellLine {
       ret = drawCell(cell)
     }
   }
-  ret = drawUI()
   return ret
 }
