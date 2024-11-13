@@ -6,27 +6,42 @@ pub fn start() -> Int {
   return 0
 }
 
-pub fn update() -> Int {
-  let mut ret = 0
+fn gamePlay() -> Int {
   if engine.gameData.stage == stage_idle {
-    ret = engine.debug("idle")
-    ret = engine.watchInput()
+    engine.debug("idle") |> ignore
+    engine.watchInput() |> ignore
   } else if engine.gameData.stage == stage_merge {
-    ret = engine.debug("merge")
-    ret = engine.cellArray.moveEnd()
-    ret = engine.cellArray.resetRemove(0)
-    ret = engine.cellArray.fillCellFirst()
+    engine.debug("merge") |> ignore
+    engine.cellArray.moveEnd() |> ignore
+    engine.cellArray.resetRemove(0) |> ignore
+    engine.cellArray.fillCellFirst() |> ignore
     engine.gameData.stage = stage_idle
   } else if engine.gameData.stage == stage_move {
     if engine.cellArray.allCellIsMoving() {
-      ret = engine.debug("moving")
-      ret = engine.moveStep()
+      engine.debug("moving") |> ignore
+      engine.moveStep() |> ignore
     } else {
       engine.gameData.stage = stage_merge
     }
   }
-  ret = engine.drawBg()
-  ret = engine.renderCell()
-  ret = engine.drawUI()
-  return ret
+  engine.drawBg() |> ignore
+  engine.renderCell() |> ignore
+  engine.drawUI() |> ignore
+  return 0
+}
+
+fn gameOver() -> Int {
+  @wasm4.text("Game Over!", 40, 50)
+  @wasm4.text("press x replay", 22, 90)
+  engine.watchGameOver() |> ignore
+  return 0
+}
+
+pub fn update() -> Int {
+  if engine.isGameOver == 0 {
+    gamePlay() |> ignore
+  } else {
+    gameOver() |> ignore
+  }
+  return 0
 }

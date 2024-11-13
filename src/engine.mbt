@@ -2,6 +2,8 @@ struct Engine {
   gameData : GameData
   cellArray : CellArray
   nodeArray : Array[Node]
+  mut hasMove : Int
+  mut isGameOver : Int
 }
 
 fn Engine::new() -> Engine {
@@ -9,6 +11,8 @@ fn Engine::new() -> Engine {
     gameData: GameData::new(),
     cellArray: CellArray::new(),
     nodeArray: [],
+    hasMove: 0,
+    isGameOver: 1,
   }
 }
 
@@ -41,6 +45,10 @@ fn Engine::makeNode(self : Engine, row : Int, col : Int, num : Int) -> Int {
 fn Engine::drawUI(self : Engine) -> Int {
   @wasm4.set_draw_colors(index=1, color_ScoreText)
   @wasm4.text("Score:" + self.gameData.score.to_string(), 2, 2)
+  if self.hasMove == 0 {
+    @wasm4.set_draw_colors(index=1, color_ScoreText)
+    @wasm4.text("press arrow keys", 15, 152)
+  }
   return 0
 }
 
@@ -80,20 +88,31 @@ fn Engine::watchInput(self : Engine) -> Int {
   if @wasm4.get_gamepad(index=1).button_right {
     self.cellArray.moveRight() |> ignore
     self.gameData.stage = stage_move
+    self.hasMove = 1
   }
   if @wasm4.get_gamepad(index=1).button_left {
     self.cellArray.moveLeft() |> ignore
     self.gameData.stage = stage_move
+    self.hasMove = 1
   }
   if @wasm4.get_gamepad(index=1).button_down {
     ret = self.cellArray.moveDown()
     self.gameData.stage = stage_move
+    self.hasMove = 1
   }
   if @wasm4.get_gamepad(index=1).button_up {
     self.cellArray.moveUp() |> ignore
     self.gameData.stage = stage_move
+    self.hasMove = 1
   }
   return ret
+}
+
+fn Engine::watchGameOver(self : Engine) -> Int {
+  if @wasm4.get_gamepad(index=1).button_1 {
+    self.isGameOver = 0
+  }
+  return 0
 }
 
 fn Engine::debug(self : Engine, text : String) -> Int {
