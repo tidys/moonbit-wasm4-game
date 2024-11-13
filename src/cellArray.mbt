@@ -6,19 +6,6 @@ fn CellArray::new() -> CellArray {
   return { data: [] }
 }
 
-fn CellArray::init(self : CellArray) -> Int {
-  for row = 0; row < cellRow; row = row + 1 {
-    let cellLine : Array[Cell] = []
-    for col = 0; col < cellCol; col = col + 1 {
-      let cell : Cell = Cell::new()
-      let a = cell.init(row, col)
-      cellLine.push(cell)
-    }
-    // self.data.push(cellLine)
-  }
-  return 0
-}
-
 fn CellArray::addCell(self : CellArray, cell : Cell) -> Int {
   self.data.push(cell)
   return 0
@@ -31,15 +18,6 @@ fn CellArray::getCell(self : CellArray, row : Int, col : Int) -> Cell {
     }
   }
   return Cell::new()
-}
-
-fn CellArray::hasBottomCell(self : CellArray, cell : Cell) -> Bool {
-  if cell.row + 1 < cellRow {
-    return true
-    // let bottom = self.data[cell.row + 1][cell.col]
-    // return bottom.valid()
-  }
-  return false
 }
 
 fn CellArray::allCellIsMoving(self : CellArray) -> Bool {
@@ -142,7 +120,7 @@ fn CellArray::moveEnd(self : CellArray) -> Int {
       i = i + 1
     }
   }
-  self.log() |> ignore
+  // self.log() |> ignore
   return 0
 }
 
@@ -172,18 +150,36 @@ fn CellArray::resetRemove(self : CellArray, v : Int) -> Int {
 }
 
 fn CellArray::fillCellFirst(self : CellArray) -> Int {
+  let arr : Array[Array[Int]] = []
   for row = 0; row < cellRow; row = row + 1 {
     for col = 0; col < cellCol; col = col + 1 {
       let a = self.getCell(row, col)
       if a.valid() {
 
       } else {
-        engine.makeNode(row, col) |> ignore
-        return 0
+        arr.push([row, col])
       }
     }
   }
+  if arr.length() > 0 {
+    let idx : Int = 15 % arr.length()
+    let target = arr[idx]
+    let row = target[0]
+    let col = target[1]
+    let number = self.randomNumer(arr.length())
+    engine.makeNode(row, col, number) |> ignore
+  }
   return 0
+}
+
+fn CellArray::randomNumer(self : CellArray, base : Int) -> Int {
+  let numberArray = [2,4,8,16]
+  let a = base
+  let b = numberArray.length() - 1
+  // @wasm4.trace(a.to_string() + "%" + b.to_string())
+  let numIdx = a % b
+  // @wasm4.trace(numIdx.to_string())
+  return numberArray[numIdx]
 }
 
 fn CellArray::randomGen(self : CellArray) -> Int {

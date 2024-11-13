@@ -44,7 +44,7 @@ fn Cell::new() -> Cell {
   }
 }
 
-fn Cell::init(self : Cell, row : Int, col : Int) -> Int {
+fn Cell::init(self : Cell, row : Int, col : Int, num:Int) -> Int {
   self.remove = 0
   self.row = row
   self.col = col
@@ -52,8 +52,8 @@ fn Cell::init(self : Cell, row : Int, col : Int) -> Int {
   self.y = self.posY()
   self.width = cellWidth
   self.height = cellHeight
-  self.number = 2
-  self.target_numbre = 2
+  self.number = num
+  self.target_numbre = num
   return 0
 }
 
@@ -116,6 +116,7 @@ fn Cell::moveTo(self : Cell, cell : Cell, number : Int) -> Int {
   self.row = cell.row
   self.col = cell.col
   self.target_numbre = number
+  engine.gameData.score = engine.gameData.score + self.number
   cell.remove = 1
   return 0
 }
@@ -124,10 +125,12 @@ fn Cell::moveDown(self : Cell) -> Int {
   self.row = self.row + 1
   return 0
 }
+
 fn Cell::moveUp(self : Cell) -> Int {
   self.row = self.row - 1
   return 0
 }
+
 fn Cell::moveLeft(self : Cell) -> Int {
   self.col = self.col - 1
   return 0

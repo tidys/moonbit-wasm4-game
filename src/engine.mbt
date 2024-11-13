@@ -13,24 +13,22 @@ fn Engine::new() -> Engine {
 }
 
 fn Engine::init(self : Engine) -> Int {
-  let mut ret = 0
-  ret = self.cellArray.init()
-  ret = self.createNode()
+  self.createNode() |> ignore
   return 0
 }
 
 fn Engine::createNode(self : Engine) -> Int {
   for row = 0; row < cellRow; row = row + 1 {
     for col = 0; col < cellCol; col = col + 1 {
-      self.makeNode(row, col) |> ignore
+      self.makeNode(row, col, 2) |> ignore
     }
   }
   return 0
 }
 
-fn Engine::makeNode(self : Engine, row : Int, col : Int) -> Int {
+fn Engine::makeNode(self : Engine, row : Int, col : Int, num : Int) -> Int {
   let cell : Cell = Cell::new()
-  cell.init(row, col) |> ignore
+  cell.init(row, col, num) |> ignore
   let node : Node = Node::new()
   node.init(row, col, cellWidth, cellHeight) |> ignore
   node.setCell(cell) |> ignore
