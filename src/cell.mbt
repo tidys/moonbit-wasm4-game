@@ -20,36 +20,32 @@ struct Cell {
   mut row : Int
   mut col : Int
   mut number : Int
-  mut target_row : Int
-  mut target_col : Int
   mut target_numbre : Int
-  mut dirty : Int
+  mut remove : Int
   mut x : Int
   mut y : Int
   mut width : Int
   mut height : Int
+  mut nodeID : Int
 }
 
 fn Cell::new() -> Cell {
   return {
     row: 0,
     col: 0,
-    number: 2,
-    target_row: 0,
-    target_col: 0,
-    target_numbre: 2,
-    dirty: 0,
+    number: 0,
+    target_numbre: 0,
+    remove: 0,
     x: 0,
     y: 0,
-    width: 10,
-    height: 10,
+    width: 0,
+    height: 0,
+    nodeID: 0,
   }
 }
 
 fn Cell::init(self : Cell, row : Int, col : Int) -> Int {
-  self.dirty = 0
-  self.target_row = row
-  self.target_col = col
+  self.remove = 0
   self.row = row
   self.col = col
   self.x = self.posX()
@@ -61,20 +57,17 @@ fn Cell::init(self : Cell, row : Int, col : Int) -> Int {
   return 0
 }
 
+fn Cell::setNodeID(self : Cell, node : Int) -> Int {
+  self.nodeID = node
+  return 0
+}
+
 fn Cell::posX(self : Cell) -> Int {
   return (cellWidth + space) * self.col + offsetX
 }
 
 fn Cell::posY(self : Cell) -> Int {
   return (cellHeight + space) * self.row + offsetY + 4
-}
-
-fn Cell::targetPosX(self : Cell) -> Int {
-  return (cellWidth + space) * self.target_col + offsetX
-}
-
-fn Cell::targetPosY(self : Cell) -> Int {
-  return (cellHeight + space) * self.target_row + offsetY + 4
 }
 
 fn Cell::valid(self : Cell) -> Bool {
@@ -89,52 +82,45 @@ fn Cell::sameNumber(self : Cell, cell : Cell) -> Bool {
 }
 
 fn Cell::isInRightPosition(self : Cell) -> Bool {
-  let targetX = self.targetPosX()
-  let targetY = self.targetPosY()
-  if self.x != targetX || self.y != targetY {
-    return false
-  } else {
-    return true
+  let targetX = self.posX()
+  let targetY = self.posY()
+  for node in engine.nodeArray {
+    if node.x == targetX && node.y == targetY && node.id == self.nodeID {
+      return true
+    }
   }
+  return false
 }
 
-fn Cell::moveTo(self : Cell, target : Cell, number : Int) -> Int {
-  self.target_row = target.row
-  self.target_col = target.col
+fn Cell::removeNode(self : Cell) -> Int {
+  let mut i = 0
+  for ; i < engine.nodeArray.length(); {
+    let node = engine.nodeArray[i]
+    if node.id == self.nodeID {
+      engine.nodeArray.remove(i) |> ignore
+      // @wasm4.trace(
+      //   "remove node " +
+      //   self.nodeID.to_string() +
+      //   "[" +
+      //   engine.nodeArray.length().to_string() +
+      //   "]",
+      // )
+    } else {
+      i = i + 1
+    }
+  }
+  return 0
+}
+
+fn Cell::moveTo(self : Cell, cell : Cell, number : Int) -> Int {
+  self.row = cell.row
+  self.col = cell.col
   self.target_numbre = number
-  self.dirty = 1
-  target.dirty = 1
+  cell.remove = 1
   return 0
 }
 
-fn Cell::isDirty(self : Cell) -> Bool {
-  return self.dirty != 0
-}
-
-fn Cell::isNotDirty(self : Cell) -> Bool {
-  return self.dirty == 0
-}
-
-// 绘制格子
-fn Cell::draw(self : Cell) -> Int {
-  @wasm4.set_draw_colors(index=1, color_CellBg)
-  @wasm4.rect(self.x, self.y, self.width, self.height)
-  let mut textWidth : Int = 0
-  let mut n : Int = self.number
-  let charSize : Int = 8
-  while n != 0 {
-    textWidth = textWidth + charSize
-    n = n / 10
-  }
-  @wasm4.set_draw_colors(index=1, color_CellText)
-  @wasm4.text(
-    self.number.to_string(),
-    self.x + (self.width - textWidth) / 2,
-    self.y + (self.height - charSize) / 2,
-  )
+fn Cell::moveDown(self : Cell) -> Int {
+  self.row = self.row + 1
   return 0
-}
-
-fn Cell::isMoveType(cell : Cell) -> Bool {
-  return cell.row != cell.target_row || cell.col != cell.target_col
 }

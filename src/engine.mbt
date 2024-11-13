@@ -1,15 +1,38 @@
 struct Engine {
   gameData : GameData
   cellArray : CellArray
+  nodeArray : Array[Node]
 }
 
 fn Engine::new() -> Engine {
-  return { gameData: GameData::new(), cellArray: CellArray::new() }
+  return {
+    gameData: GameData::new(),
+    cellArray: CellArray::new(),
+    nodeArray: [],
+  }
 }
 
 fn Engine::init(self : Engine) -> Int {
   let mut ret = 0
   ret = self.cellArray.init()
+  ret = self.createNode()
+  return 0
+}
+
+fn Engine::createNode(self : Engine) -> Int {
+  let mut a = 0
+  for row = 0; row < cellRow; row = row + 1 {
+    for col = 0; col < cellCol; col = col + 1 {
+      let cell : Cell = Cell::new()
+      a = cell.init(row, col)
+      let node : Node = Node::new()
+      a = node.init(row, col, cellWidth, cellHeight)
+      a = node.setCell(cell)
+      a = cell.setNodeID(node.id)
+      self.nodeArray.push(node)
+      a = self.cellArray.addCell(cell)
+    }
+  }
   return 0
 }
 
@@ -28,12 +51,29 @@ fn Engine::drawBg(self : Engine) -> Int {
 
 fn Engine::renderCell(self : Engine) -> Int {
   let mut ret : Int = 0
-  for cellLine in self.cellArray.data {
-    for cell in cellLine {
-      ret = cell.draw()
-    }
+  for node in self.nodeArray {
+    ret = node.draw()
   }
   return ret
+}
+
+fn Engine::moveStep(self : Engine) -> Int {
+  for node in self.nodeArray {
+    let cell : Cell = node.cell
+    if cell.isInRightPosition() {
+      // if cell.col < cell.target_col {
+      //   cell.x = cell.x + 1
+      // } else if cell.col > cell.target_col {
+      //   cell.x = cell.x - 1
+      // }
+    }
+    if node.y < cell.posY() {
+      node.y = node.y + 1
+    } else if node.y > cell.posY() {
+      node.y = node.y - 1
+    }
+  }
+  return 0
 }
 
 fn Engine::watchInput(self : Engine) -> Int {
