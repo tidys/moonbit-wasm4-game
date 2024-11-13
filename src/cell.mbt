@@ -124,3 +124,16 @@ fn Cell::moveDown(self : Cell) -> Int {
   self.row = self.row + 1
   return 0
 }
+fn Cell::moveUp(self : Cell) -> Int {
+  self.row = self.row - 1
+  return 0
+}
+fn Cell::moveLeft(self : Cell) -> Int {
+  self.col = self.col - 1
+  return 0
+}
+
+fn Cell::moveRight(self : Cell) -> Int {
+  self.col = self.col + 1
+  return 0
+}

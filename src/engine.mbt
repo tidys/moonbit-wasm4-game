@@ -20,19 +20,23 @@ fn Engine::init(self : Engine) -> Int {
 }
 
 fn Engine::createNode(self : Engine) -> Int {
-  let mut a = 0
   for row = 0; row < cellRow; row = row + 1 {
     for col = 0; col < cellCol; col = col + 1 {
-      let cell : Cell = Cell::new()
-      a = cell.init(row, col)
-      let node : Node = Node::new()
-      a = node.init(row, col, cellWidth, cellHeight)
-      a = node.setCell(cell)
-      a = cell.setNodeID(node.id)
-      self.nodeArray.push(node)
-      a = self.cellArray.addCell(cell)
+      self.makeNode(row, col) |> ignore
     }
   }
+  return 0
+}
+
+fn Engine::makeNode(self : Engine, row : Int, col : Int) -> Int {
+  let cell : Cell = Cell::new()
+  cell.init(row, col) |> ignore
+  let node : Node = Node::new()
+  node.init(row, col, cellWidth, cellHeight) |> ignore
+  node.setCell(cell) |> ignore
+  cell.setNodeID(node.id) |> ignore
+  self.nodeArray.push(node)
+  self.cellArray.addCell(cell) |> ignore
   return 0
 }
 
@@ -60,12 +64,10 @@ fn Engine::renderCell(self : Engine) -> Int {
 fn Engine::moveStep(self : Engine) -> Int {
   for node in self.nodeArray {
     let cell : Cell = node.cell
-    if cell.isInRightPosition() {
-      // if cell.col < cell.target_col {
-      //   cell.x = cell.x + 1
-      // } else if cell.col > cell.target_col {
-      //   cell.x = cell.x - 1
-      // }
+    if node.x < cell.posX() {
+      node.x = node.x + 1
+    } else if node.x > cell.posX() {
+      node.x = node.x - 1
     }
     if node.y < cell.posY() {
       node.y = node.y + 1
@@ -79,9 +81,11 @@ fn Engine::moveStep(self : Engine) -> Int {
 fn Engine::watchInput(self : Engine) -> Int {
   let mut ret : Int = 0
   if @wasm4.get_gamepad(index=1).button_right {
+    self.cellArray.moveRight() |> ignore
     self.gameData.stage = stage_move
   }
   if @wasm4.get_gamepad(index=1).button_left {
+    self.cellArray.moveLeft() |> ignore
     self.gameData.stage = stage_move
   }
   if @wasm4.get_gamepad(index=1).button_down {
@@ -89,6 +93,7 @@ fn Engine::watchInput(self : Engine) -> Int {
     self.gameData.stage = stage_move
   }
   if @wasm4.get_gamepad(index=1).button_up {
+    self.cellArray.moveUp() |> ignore
     self.gameData.stage = stage_move
   }
   return ret

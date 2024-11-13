@@ -42,10 +42,6 @@ fn CellArray::hasBottomCell(self : CellArray, cell : Cell) -> Bool {
   return false
 }
 
-fn CellArray::getBottomCell(self : CellArray, cell : Cell) -> Cell {
-  return self.getCell(cell.row + 1, cell.col)
-}
-
 fn CellArray::allCellIsMoving(self : CellArray) -> Bool {
   for cell in self.data {
     if cell.isInRightPosition() {
@@ -58,23 +54,79 @@ fn CellArray::allCellIsMoving(self : CellArray) -> Bool {
 }
 
 fn CellArray::moveDown(self : CellArray) -> Int {
-  let mut ret = 0
   for row = cellRow - 2; row >= 0; row = row - 1 {
     for col = 0; col < cellCol; col = col + 1 {
       let cell_cur = self.getCell(row, col)
       if cell_cur.valid() {
-        let cell_bottom : Cell = self.getBottomCell(cell_cur)
+        let cell_bottom : Cell = self.getCell(cell_cur.row + 1, cell_cur.col)
         if cell_bottom.valid() {
           if cell_bottom.sameNumber(cell_cur) {
-            ret = cell_cur.moveTo(cell_bottom, cell_cur.number * 2)
+            cell_cur.moveTo(cell_bottom, cell_cur.number * 2) |> ignore
           }
         } else {
-          ret = cell_cur.moveDown()
+          cell_cur.moveDown() |> ignore
         }
       }
     }
   }
-  return ret
+  return 0
+}
+
+fn CellArray::moveUp(self : CellArray) -> Int {
+  for row = 1; row < cellRow; row = row + 1 {
+    for col = 0; col < cellCol; col = col + 1 {
+      let cell_cur = self.getCell(row, col)
+      if cell_cur.valid() {
+        let cell_top : Cell = self.getCell(cell_cur.row - 1, cell_cur.col)
+        if cell_top.valid() {
+          if cell_top.sameNumber(cell_cur) {
+            cell_cur.moveTo(cell_top, cell_cur.number * 2) |> ignore
+          }
+        } else {
+          cell_cur.moveUp() |> ignore
+        }
+      }
+    }
+  }
+  return 0
+}
+
+fn CellArray::moveLeft(self : CellArray) -> Int {
+  for col = 1; col < cellCol; col = col + 1 {
+    for row = 0; row < cellRow; row = row + 1 {
+      let cell_cur = self.getCell(row, col)
+      if cell_cur.valid() {
+        let cell_left : Cell = self.getCell(cell_cur.row, cell_cur.col - 1)
+        if cell_left.valid() {
+          if cell_left.sameNumber(cell_cur) {
+            cell_cur.moveTo(cell_left, cell_cur.number * 2) |> ignore
+          }
+        } else {
+          cell_cur.moveLeft() |> ignore
+        }
+      }
+    }
+  }
+  return 0
+}
+
+fn CellArray::moveRight(self : CellArray) -> Int {
+  for col = cellCol - 2; col >= 0; col = col - 1 {
+    for row = 0; row < cellRow; row = row + 1 {
+      let cell_cur = self.getCell(row, col)
+      if cell_cur.valid() {
+        let cell_right : Cell = self.getCell(cell_cur.row, cell_cur.col + 1)
+        if cell_right.valid() {
+          if cell_right.sameNumber(cell_cur) {
+            cell_cur.moveTo(cell_right, cell_cur.number * 2) |> ignore
+          }
+        } else {
+          cell_cur.moveRight() |> ignore
+        }
+      }
+    }
+  }
+  return 0
 }
 
 // row 和 row_target 不相等的重置了
@@ -120,14 +172,15 @@ fn CellArray::resetRemove(self : CellArray, v : Int) -> Int {
 }
 
 fn CellArray::fillCellFirst(self : CellArray) -> Int {
-  for cell in self.data {
-    if cell.valid() {
+  for row = 0; row < cellRow; row = row + 1 {
+    for col = 0; col < cellCol; col = col + 1 {
+      let a = self.getCell(row, col)
+      if a.valid() {
 
-    } else {
-      let cell = Cell::new()
-      let a = cell.init(cell.row, cell.col)
-      // self.data[cell.row][cell.col] = cell
-      return 0
+      } else {
+        engine.makeNode(row, col) |> ignore
+        return 0
+      }
     }
   }
   return 0
