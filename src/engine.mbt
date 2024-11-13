@@ -46,8 +46,7 @@ fn Engine::drawUI(self : Engine) -> Int {
 
 fn Engine::drawBg(self : Engine) -> Int {
   @wasm4.set_draw_colors(index=1, color_StageBg)
-  let offset = (168 - cellTotalWidth) / 2
-  // @wasm4.rect(offset, 0, 168 - offset * 2, 168)
+  @wasm4.rect(11, 15, 138, 138)
   return 0
 }
 
