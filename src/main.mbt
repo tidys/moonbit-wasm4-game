@@ -15,16 +15,18 @@ pub fn update() -> Int {
     ret = engine.debug("merge")
     ret = engine.cellArray.moveEnd()
     ret = engine.cellArray.resetDirty(0)
+    ret = engine.cellArray.fillCellFirst()
     engine.gameData.stage = stage_idle
   } else if engine.gameData.stage == stage_move {
     ret = engine.debug("move")
     if engine.cellArray.allCellIsMoving() {
       ret = engine.debug("moving")
-      ret = engine.cellArray.cellStep()
+      ret = engine.cellArray.moveStep()
     } else {
       engine.gameData.stage = stage_merge
     }
   }
+  ret = engine.drawBg()
   ret = engine.renderCell()
   ret = engine.drawUI()
   return ret

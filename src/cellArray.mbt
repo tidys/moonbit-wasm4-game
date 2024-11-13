@@ -21,8 +21,9 @@ fn CellArray::init(self : CellArray) -> Int {
 
 fn CellArray::cellHasBottom(self : CellArray, cell : Cell) -> Bool {
   if cell.row + 1 < cellRow {
-    let bottom = self.data[cell.row + 1][cell.col]
-    return bottom.valid()
+    return true
+    // let bottom = self.data[cell.row + 1][cell.col]
+    // return bottom.valid()
   }
   return false
 }
@@ -46,19 +47,24 @@ fn CellArray::allCellIsMoving(self : CellArray) -> Bool {
 }
 
 fn CellArray::moveDown(self : CellArray) -> Int {
-  for row = 0; row < cellRow; row = row + 1 {
+  for row = cellRow - 1; row >= 0; row = row - 1 {
     for col = 0; col < cellCol; col = col + 1 {
       let cell_cur : Cell = self.data[row][col]
       if cell_cur.valid() && self.cellHasBottom(cell_cur) {
         // 有bottom
         let cell_bottom : Cell = self.cellBottom(cell_cur)
-        if cell_cur.isNotDirty() &&
-          cell_bottom.isNotDirty() &&
-          cell_bottom.same(cell_cur) {
-          cell_cur.row_target = cell_bottom.row
-          cell_cur.col_target = cell_bottom.col
-          cell_cur.dirty = 1
-          cell_bottom.dirty = 1
+        if cell_cur.isNotDirty() && cell_bottom.isNotDirty() {
+          if cell_bottom.valid() {
+            // 下边的元素有效
+            if cell_bottom.sameNumber(cell_cur) {
+              // 元素相同进行合并
+              let a = cell_cur.moveTo(cell_bottom, cell_cur.number * 2)
+            }
+          } else {
+            // 下边的元素无效，仅仅移动过去
+            let a = cell_cur.moveTo(cell_bottom, cell_cur.number)
+
+          }
         }
       }
     }
@@ -70,10 +76,15 @@ fn CellArray::moveDown(self : CellArray) -> Int {
 fn CellArray::moveEnd(self : CellArray) -> Int {
   for cellLine in self.data {
     for cell in cellLine {
-      if cell.row != cell.row_target || cell.col != cell.col_target {
-        cell.number = 0
-        let target = self.data[cell.row_target][cell.col_target]
-        target.number = target.number * 2
+      if cell.isMoveType() && cell.isDirty() {
+        cell.number = cell.target_numbre;
+        cell.row = cell.target_row
+        cell.col = cell.target_col
+        
+        let target = self.data[cell.target_row][cell.target_col]
+        if target.valid() && target.isDirty() {
+          target.number = target.number * 2
+        }
       }
     }
   }
@@ -89,20 +100,40 @@ fn CellArray::resetDirty(self : CellArray, v : Int) -> Int {
   return 0
 }
 
-fn CellArray::cellStep(self : CellArray) -> Int {
+fn CellArray::fillCellFirst(self : CellArray) -> Int {
+  for cellLine in self.data {
+    for cell in cellLine {
+      if cell.valid() {
+
+      } else {
+        let cell = Cell::new()
+        let a = cell.init(cell.row, cell.col)
+        self.data[cell.row][cell.col] = cell
+        return 0
+      }
+    }
+  }
+  return 0
+}
+
+fn CellArray::randomGen(self : CellArray) -> Int {
+  return 0
+}
+
+fn CellArray::moveStep(self : CellArray) -> Int {
   for cellLine in self.data {
     for cell in cellLine {
       if cell.isInRightPosition() {
 
       } else {
-        if cell.col < cell.col_target {
+        if cell.col < cell.target_col {
           cell.x = cell.x + 1
-        } else if cell.col > cell.col_target {
+        } else if cell.col > cell.target_col {
           cell.x = cell.x - 1
         }
-        if cell.row < cell.row_target {
+        if cell.row < cell.target_row {
           cell.y = cell.y + 1
-        } else if cell.row > cell.row_target {
+        } else if cell.row > cell.target_row {
           cell.y = cell.y - 1
         }
       }

@@ -19,35 +19,37 @@ let offsetY : Int = (160 - cellTotalHeight) / 2
 struct Cell {
   mut row : Int
   mut col : Int
-  mut row_target : Int
-  mut col_target : Int
+  mut number : Int
+  mut target_row : Int
+  mut target_col : Int
+  mut target_numbre : Int
   mut dirty : Int
   mut x : Int
   mut y : Int
   mut width : Int
   mut height : Int
-  mut number : Int
 }
 
 fn Cell::new() -> Cell {
   return {
     row: 0,
     col: 0,
-    row_target: 0,
-    col_target: 0,
+    number: 2,
+    target_row: 0,
+    target_col: 0,
+    target_numbre: 2,
     dirty: 0,
     x: 0,
     y: 0,
     width: 10,
     height: 10,
-    number: 2,
   }
 }
 
 fn Cell::init(self : Cell, row : Int, col : Int) -> Int {
   self.dirty = 0
-  self.row_target = row
-  self.col_target = col
+  self.target_row = row
+  self.target_col = col
   self.row = row
   self.col = col
   self.x = self.posX()
@@ -55,6 +57,7 @@ fn Cell::init(self : Cell, row : Int, col : Int) -> Int {
   self.width = cellWidth
   self.height = cellHeight
   self.number = 2
+  self.target_numbre = 2
   return 0
 }
 
@@ -67,11 +70,11 @@ fn Cell::posY(self : Cell) -> Int {
 }
 
 fn Cell::targetPosX(self : Cell) -> Int {
-  return (cellWidth + space) * self.col_target + offsetX
+  return (cellWidth + space) * self.target_col + offsetX
 }
 
 fn Cell::targetPosY(self : Cell) -> Int {
-  return (cellHeight + space) * self.row_target + offsetY + 4
+  return (cellHeight + space) * self.target_row + offsetY + 4
 }
 
 fn Cell::valid(self : Cell) -> Bool {
@@ -81,7 +84,7 @@ fn Cell::valid(self : Cell) -> Bool {
   return true
 }
 
-fn Cell::same(self : Cell, cell : Cell) -> Bool {
+fn Cell::sameNumber(self : Cell, cell : Cell) -> Bool {
   return self.number == cell.number
 }
 
@@ -95,6 +98,15 @@ fn Cell::isInRightPosition(self : Cell) -> Bool {
   }
 }
 
+fn Cell::moveTo(self : Cell, target : Cell, number : Int) -> Int {
+  self.target_row = target.row
+  self.target_col = target.col
+  self.target_numbre = number
+  self.dirty = 1
+  target.dirty = 1
+  return 0
+}
+
 fn Cell::isDirty(self : Cell) -> Bool {
   return self.dirty != 0
 }
@@ -105,9 +117,8 @@ fn Cell::isNotDirty(self : Cell) -> Bool {
 
 // 绘制格子
 fn Cell::draw(self : Cell) -> Int {
-  @wasm4.set_draw_colors(index=1, 3)
+  @wasm4.set_draw_colors(index=1, color_CellBg)
   @wasm4.rect(self.x, self.y, self.width, self.height)
-  @wasm4.set_draw_colors(index=1, 2)
   let mut textWidth : Int = 0
   let mut n : Int = self.number
   let charSize : Int = 8
@@ -115,10 +126,15 @@ fn Cell::draw(self : Cell) -> Int {
     textWidth = textWidth + charSize
     n = n / 10
   }
+  @wasm4.set_draw_colors(index=1, color_CellText)
   @wasm4.text(
     self.number.to_string(),
     self.x + (self.width - textWidth) / 2,
     self.y + (self.height - charSize) / 2,
   )
   return 0
+}
+
+fn Cell::isMoveType(cell : Cell) -> Bool {
+  return cell.row != cell.target_row || cell.col != cell.target_col
 }
