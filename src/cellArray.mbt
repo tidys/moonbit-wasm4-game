@@ -149,6 +149,60 @@ fn CellArray::resetRemove(self : CellArray, v : Int) -> Int {
   return 0
 }
 
+fn CellArray::reset(self : CellArray) -> Int {
+  for row = 0; row < cellRow; row = row + 1 {
+    for col = 0; col < cellCol; col = col + 1 {
+      let mut cell = self.getCell(row, col)
+      if not(cell.valid()) {
+        cell = engine.makeNode(row, col, 2)
+      }
+      cell.init(row, col, 2) |> ignore
+    }
+  }
+  return 0
+}
+
+// 判断是否填满，判断是否有相连相同的数字
+fn CellArray::isFull(self : CellArray) -> Bool {
+  for row = 0; row < cellRow; row = row + 1 {
+    for col = 0; col < cellCol; col = col + 1 {
+      let a = self.getCell(row, col)
+      if a.valid() {
+
+      } else {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+fn CellArray::isSameNumberLink(self : CellArray) -> Bool {
+  for row = 0; row < cellRow; row = row + 1 {
+    for col = 0; col < cellCol; col = col + 1 {
+      let cell = self.getCell(row, col)
+      // 看上下左右是否有数字相同的
+      let cell_up : Cell = self.getCell(cell.row - 1, cell.col)
+      if cell_up.valid() && cell_up.sameNumber(cell) {
+        return true
+      }
+      let cell_down : Cell = self.getCell(cell.row + 1, cell.col)
+      if cell_down.valid() && cell_down.sameNumber(cell) {
+        return true
+      }
+      let cell_left : Cell = self.getCell(cell.row, cell.col - 1)
+      if cell_left.valid() && cell_left.sameNumber(cell) {
+        return true
+      }
+      let cell_right : Cell = self.getCell(cell.row, cell.col + 1)
+      if cell_right.valid() && cell_right.sameNumber(cell) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 fn CellArray::fillCellFirst(self : CellArray) -> Int {
   let arr : Array[Array[Int]] = []
   for row = 0; row < cellRow; row = row + 1 {
@@ -167,13 +221,13 @@ fn CellArray::fillCellFirst(self : CellArray) -> Int {
     let row = target[0]
     let col = target[1]
     let number = self.randomNumer(arr.length())
-    engine.makeNode(row, col, number) |> ignore
+    engine.makeNode(row, col, number + col) |> ignore
   }
   return 0
 }
 
 fn CellArray::randomNumer(self : CellArray, base : Int) -> Int {
-  let numberArray = [2,4,8,16]
+  let numberArray = [2, 4, 8, 16]
   let a = base
   let b = numberArray.length() - 1
   // @wasm4.trace(a.to_string() + "%" + b.to_string())

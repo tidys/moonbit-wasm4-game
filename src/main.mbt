@@ -10,12 +10,25 @@ fn gamePlay() -> Int {
   if engine.gameData.stage == stage_idle {
     engine.debug("idle") |> ignore
     engine.watchInput() |> ignore
+  } else if engine.gameData.stage == stage_result {
+    engine.count = engine.count - 1
+    @wasm4.trace("count:" + engine.count.to_string())
+    if engine.count <= 0 {
+      engine.count = 0
+      engine.isGameOver = 1
+    }
   } else if engine.gameData.stage == stage_merge {
     engine.debug("merge") |> ignore
     engine.cellArray.moveEnd() |> ignore
     engine.cellArray.resetRemove(0) |> ignore
     engine.cellArray.fillCellFirst() |> ignore
-    engine.gameData.stage = stage_idle
+    if engine.cellArray.isFull() && not(engine.cellArray.isSameNumberLink()) {
+      // 展示2s
+      engine.gameData.stage = stage_result
+      engine.count = 80
+    } else {
+      engine.gameData.stage = stage_idle
+    }
   } else if engine.gameData.stage == stage_move {
     if engine.cellArray.allCellIsMoving() {
       engine.debug("moving") |> ignore

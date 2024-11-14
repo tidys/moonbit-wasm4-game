@@ -4,6 +4,7 @@ struct Engine {
   nodeArray : Array[Node]
   mut hasMove : Int
   mut isGameOver : Int
+  mut count : Int
 }
 
 fn Engine::new() -> Engine {
@@ -13,6 +14,7 @@ fn Engine::new() -> Engine {
     nodeArray: [],
     hasMove: 0,
     isGameOver: 1,
+    count: 0,
   }
 }
 
@@ -30,7 +32,7 @@ fn Engine::createNode(self : Engine) -> Int {
   return 0
 }
 
-fn Engine::makeNode(self : Engine, row : Int, col : Int, num : Int) -> Int {
+fn Engine::makeNode(self : Engine, row : Int, col : Int, num : Int) -> Cell {
   let cell : Cell = Cell::new()
   cell.init(row, col, num) |> ignore
   let node : Node = Node::new()
@@ -39,7 +41,7 @@ fn Engine::makeNode(self : Engine, row : Int, col : Int, num : Int) -> Int {
   cell.setNodeID(node.id) |> ignore
   self.nodeArray.push(node)
   self.cellArray.addCell(cell) |> ignore
-  return 0
+  return cell
 }
 
 fn Engine::drawUI(self : Engine) -> Int {
@@ -49,6 +51,16 @@ fn Engine::drawUI(self : Engine) -> Int {
     @wasm4.set_draw_colors(index=1, color_ScoreText)
     @wasm4.text("press arrow keys", 15, 152)
   }
+  return 0
+}
+
+fn Engine::reset(self : Engine) -> Int {
+  self.hasMove = 0
+  self.gameData.score = 0
+  self.gameData.stage = stage_idle
+  self.isGameOver = 0
+  self.cellArray.reset() |> ignore
+  self.count=0
   return 0
 }
 
@@ -105,12 +117,25 @@ fn Engine::watchInput(self : Engine) -> Int {
     self.gameData.stage = stage_move
     self.hasMove = 1
   }
+  if @wasm4.get_gamepad(index=1).button_1 {
+    // press x
+    if self.cellArray.isFull() {
+      @wasm4.trace("full")
+    } else {
+      @wasm4.trace("not full")
+    }
+    if self.cellArray.isSameNumberLink() {
+      @wasm4.trace("link")
+    } else {
+      @wasm4.trace("not link")
+    }
+  }
   return ret
 }
 
 fn Engine::watchGameOver(self : Engine) -> Int {
   if @wasm4.get_gamepad(index=1).button_1 {
-    self.isGameOver = 0
+    self.reset() |> ignore
   }
   return 0
 }
