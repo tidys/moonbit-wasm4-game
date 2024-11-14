@@ -13,7 +13,7 @@ fn Engine::new() -> Engine {
     cellArray: CellArray::new(),
     nodeArray: [],
     hasMove: 0,
-    isGameOver: 1,
+    isGameOver: 0,
     count: 0,
   }
 }
@@ -60,7 +60,7 @@ fn Engine::reset(self : Engine) -> Int {
   self.gameData.stage = stage_idle
   self.isGameOver = 0
   self.cellArray.reset() |> ignore
-  self.count=0
+  self.count = 0
   return 0
 }
 
@@ -119,16 +119,16 @@ fn Engine::watchInput(self : Engine) -> Int {
   }
   if @wasm4.get_gamepad(index=1).button_1 {
     // press x
-    if self.cellArray.isFull() {
-      @wasm4.trace("full")
-    } else {
-      @wasm4.trace("not full")
-    }
-    if self.cellArray.isSameNumberLink() {
-      @wasm4.trace("link")
-    } else {
-      @wasm4.trace("not link")
-    }
+    // if self.cellArray.isFull() {
+    //   @wasm4.trace("full")
+    // } else {
+    //   @wasm4.trace("not full")
+    // }
+    // if self.cellArray.isSameNumberLink() {
+    //   @wasm4.trace("link")
+    // } else {
+    //   @wasm4.trace("not link")
+    // }
   }
   return ret
 }
@@ -141,8 +141,8 @@ fn Engine::watchGameOver(self : Engine) -> Int {
 }
 
 fn Engine::debug(self : Engine, text : String) -> Int {
-  @wasm4.set_draw_colors(index=1, 3)
-  @wasm4.text(text, 80, 2)
+  // @wasm4.set_draw_colors(index=1, 3)
+  // @wasm4.text(text, 80, 2)
   return 0
 }
 

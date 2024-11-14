@@ -1,5 +1,3 @@
-let nodeId : Int = 0
-
 struct Node {
   mut id : Int
   mut x : Int

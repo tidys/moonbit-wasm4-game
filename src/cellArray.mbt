@@ -138,10 +138,6 @@ fn CellArray::log(self : CellArray) -> Int {
   return 0
 }
 
-fn CellArray::removeCell(self : CellArray, cell : Cell) -> Int {
-  return 0
-}
-
 fn CellArray::resetRemove(self : CellArray, v : Int) -> Int {
   for cell in self.data {
     cell.remove = v
@@ -203,7 +199,7 @@ fn CellArray::isSameNumberLink(self : CellArray) -> Bool {
   return false
 }
 
-fn CellArray::fillCellFirst(self : CellArray) -> Int {
+fn CellArray::fillCellRandom(self : CellArray) -> Int {
   let arr : Array[Array[Int]] = []
   for row = 0; row < cellRow; row = row + 1 {
     for col = 0; col < cellCol; col = col + 1 {
@@ -221,7 +217,7 @@ fn CellArray::fillCellFirst(self : CellArray) -> Int {
     let row = target[0]
     let col = target[1]
     let number = self.randomNumer(arr.length())
-    engine.makeNode(row, col, number + col) |> ignore
+    engine.makeNode(row, col, number) |> ignore
   }
   return 0
 }

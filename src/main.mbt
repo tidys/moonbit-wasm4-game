@@ -2,7 +2,7 @@ let engine : Engine = Engine::new()
 
 pub fn start() -> Int {
   // @wasm4.set_palette(1, @wasm4.rgb(0xff0000))
-  let ret : Int = engine.init()
+  engine.init() |> ignore
   return 0
 }
 
@@ -12,7 +12,7 @@ fn gamePlay() -> Int {
     engine.watchInput() |> ignore
   } else if engine.gameData.stage == stage_result {
     engine.count = engine.count - 1
-    @wasm4.trace("count:" + engine.count.to_string())
+    // @wasm4.trace("count:" + engine.count.to_string())
     if engine.count <= 0 {
       engine.count = 0
       engine.isGameOver = 1
@@ -21,7 +21,7 @@ fn gamePlay() -> Int {
     engine.debug("merge") |> ignore
     engine.cellArray.moveEnd() |> ignore
     engine.cellArray.resetRemove(0) |> ignore
-    engine.cellArray.fillCellFirst() |> ignore
+    engine.cellArray.fillCellRandom() |> ignore
     if engine.cellArray.isFull() && not(engine.cellArray.isSameNumberLink()) {
       // 展示2s
       engine.gameData.stage = stage_result

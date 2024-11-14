@@ -22,10 +22,6 @@ struct Cell {
   mut number : Int
   mut target_numbre : Int
   mut remove : Int
-  mut x : Int
-  mut y : Int
-  mut width : Int
-  mut height : Int
   mut nodeID : Int
 }
 
@@ -36,10 +32,6 @@ fn Cell::new() -> Cell {
     number: 0,
     target_numbre: 0,
     remove: 0,
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
     nodeID: 0,
   }
 }
@@ -48,10 +40,6 @@ fn Cell::init(self : Cell, row : Int, col : Int, num:Int) -> Int {
   self.remove = 0
   self.row = row
   self.col = col
-  self.x = self.posX()
-  self.y = self.posY()
-  self.width = cellWidth
-  self.height = cellHeight
   self.number = num
   self.target_numbre = num
   return 0
