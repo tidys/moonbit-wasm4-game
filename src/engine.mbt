@@ -101,21 +101,25 @@ fn Engine::watchInput(self : Engine) -> Int {
     self.cellArray.moveRight() |> ignore
     self.gameData.stage = stage_move
     self.hasMove = 1
+    self.btnSound() |> ignore
   }
   if @wasm4.get_gamepad(index=1).button_left {
     self.cellArray.moveLeft() |> ignore
     self.gameData.stage = stage_move
     self.hasMove = 1
+    self.btnSound() |> ignore
   }
   if @wasm4.get_gamepad(index=1).button_down {
     ret = self.cellArray.moveDown()
     self.gameData.stage = stage_move
+    self.btnSound() |> ignore
     self.hasMove = 1
   }
   if @wasm4.get_gamepad(index=1).button_up {
     self.cellArray.moveUp() |> ignore
     self.gameData.stage = stage_move
     self.hasMove = 1
+    self.btnSound() |> ignore
   }
   if @wasm4.get_gamepad(index=1).button_1 {
     // press x
@@ -131,6 +135,16 @@ fn Engine::watchInput(self : Engine) -> Int {
     // }
   }
   return ret
+}
+
+fn Engine::btnSound(self : Engine) -> Int {
+  @wasm4.tone(
+    (100, 400),
+    @wasm4.ADSR::new(5),
+    @wasm4.ADSRVolume::new(100),
+    @wasm4.ToneFlag::new(),
+  )
+  return 0
 }
 
 fn Engine::watchGameOver(self : Engine) -> Int {
